@@ -31,7 +31,7 @@ public class Catapult_tuning extends LinearOpMode {
     public double NEW_F = 579;
     // These values are for illustration only; they must be set
     // and adjusted for each motor based on its planned usage.
-    public double set_angle_degrees = 0;
+    public double set_angle_degrees = 30;
     public final double TICKS_PER_DEGREE= 537.7/360;
     public boolean IntakeOn = true;
     public int setposition =  (int)(set_angle_degrees * TICKS_PER_DEGREE);
@@ -88,14 +88,14 @@ public class Catapult_tuning extends LinearOpMode {
 
             if (gamepad1.aWasPressed()) {
                 if (set_angle_degrees < -50) {
-                    set_angle_degrees = 0;
+                    set_angle_degrees = 30;
                     catapult.setPower(0.1);
                     catapult2.setPower(0.1);
                     NEW_F = 178;
                 } else if (set_angle_degrees > -50) {
                     catapult.setPower(1);
                     catapult2.setPower(1);
-                    set_angle_degrees = -95;
+                    set_angle_degrees = -75;
                     NEW_F = 579;
                 }
             }
