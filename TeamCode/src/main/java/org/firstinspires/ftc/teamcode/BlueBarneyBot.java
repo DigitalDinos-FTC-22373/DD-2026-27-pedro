@@ -1,82 +1,87 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class BlueBarneyBot {
+    // CONSTANTS
+
+    private static int CATAPULT_L_DOWN_POS = 50;
+    private static int CATAPULT_R_DOWN_POS = 50;
+
+    private static int CATAPULT_L_SHOOT_POS = -80;
+    private static int CATAPULT_R_SHOOT_POS = -80;
+
+    private static int CATAPULT_L_BLOCK_POS = -100;
+    private static int CATAPULT_R_BLOCK_POS = -100;
+
+    private static int CATAPULT_L_FLOWER_POS = -85;
+    private static int CATAPULT_R_FLOWER_POS = -85;
+
+
+    public double DEFAULT_P = 0.84;
+    public double DEFAULT_F = 252;
+    public double FAST_F = 579;
+    public double FAST_P = 1.1;
+    public double SLOW_F = 100;
+    public double SLOW_P = 0.7;
+
     private DcMotor intake;
+    private DcMotor catapult_left;
+    private DcMotor catapult_right;
 
-    private SparkFunOTOS sparkFunOTOS;
-    private DcMotor frontLeftDrive;
-    private DcMotor backLeftDrive;
-    private DcMotor backRightDrive;
-    private DcMotor frontRightDrive;
-    private DcMotor Catapult0;
-    IMU imu;
-
-    public void init(HardwareMap hardwareMap){
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        sparkFunOTOS = hardwareMap.get(SparkFunOTOS.class, "otos");
-        configureOTOS();
+    public final double TICKS_PER_DEGREE = 537.7 / 360;
 
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "DriveFL");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "DriveBL");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "DriveFR");
-        backRightDrive = hardwareMap.get(DcMotor.class, "DriveBR");
+    public void init(HardwareMap hardwareMap) {
 
         intake = hardwareMap.get(DcMotor.class, "intake");
+        intake.setDirection(DcMotor.Direction.REVERSE);
+
         //Vineeth made the change
-        Catapult0 = hardwareMap.get(DcMotorEx.class, "Catapult0");
+        catapult_left = hardwareMap.get(DcMotorEx.class, "catapult_left");
+        catapult_right = hardwareMap.get(DcMotorEx.class, "catapult_right");
 
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapult_left.setDirection(DcMotor.Direction.FORWARD);
+        catapult_left.setTargetPosition(CATAPULT_L_DOWN_POS);
+        catapult_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        intake.setDirection(DcMotor.Direction.FORWARD);
-//        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapult_right.setDirection(DcMotor.Direction.REVERSE); // direrction good
+        catapult_right.setTargetPosition(CATAPULT_R_DOWN_POS);
+        catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
 
-        // shooter.setMode(DcMotor.RunMode.);
+    public void shoot() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(FAST_P, 0, 0, FAST_F);
+        catapult_left.setTargetPosition(CATAPULT_L_SHOOT_POS);
+        catapult_right.setTargetPosition(CATAPULT_R_SHOOT_POS);
+        intake.setPower(0);
     }
-    private  void configureOTOS() {
-        sparkFunOTOS.setLinearUnit(DistanceUnit.INCH);
-        sparkFunOTOS.setAngularUnit(AngleUnit.DEGREES);
-        sparkFunOTOS.setOffset(new SparkFunOTOS.Pose2D(-0.125, -3.75, 0));
-        sparkFunOTOS.setLinearScalar(1.0);
-        sparkFunOTOS.setAngularScalar(0.993);
-        sparkFunOTOS.resetTracking();
-        sparkFunOTOS.setPosition(new SparkFunOTOS.Pose2D(0,0,0));
-        sparkFunOTOS.calibrateImu(255, false);
+
+    public void block() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(DEFAULT_P, 0, 0, DEFAULT_F);
+        catapult_left.setTargetPosition(CATAPULT_L_BLOCK_POS);
+        catapult_right.setTargetPosition(CATAPULT_R_BLOCK_POS);
+        intake.setPower(0);
     }
+
+    public void flower() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(SLOW_P, 0, 0, SLOW_F);
+        catapult_left.setTargetPosition(CATAPULT_L_FLOWER_POS);
+        catapult_right.setTargetPosition(CATAPULT_R_FLOWER_POS);
+        intake.setPower(0);
     }
+
+    public void lower() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(DEFAULT_P, 0, 0, DEFAULT_F);
+        catapult_left.setTargetPosition(CATAPULT_L_DOWN_POS);
+        catapult_right.setTargetPosition(CATAPULT_R_DOWN_POS);
+        intake.setPower(1);
+    }
+}
+
