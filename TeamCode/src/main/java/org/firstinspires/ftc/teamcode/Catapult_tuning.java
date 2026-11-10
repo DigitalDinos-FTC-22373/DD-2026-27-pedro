@@ -34,8 +34,9 @@ public class Catapult_tuning extends LinearOpMode {
 
      public double lowering_F = 252;
 
-     public double Higher_F = 579;
-     public double Higher_PP = 1.1;
+     //rainbow basket changes
+     public double Higher_F = 400;
+     public double Higher_PP = 0.9;
     // These values are for illustration only; they must be set
     // and adjusted for each motor based on its planned usage.
     public double set_angle_degrees = 30;
@@ -103,7 +104,8 @@ public class Catapult_tuning extends LinearOpMode {
                 } else if (set_angle_degrees > -50) {
                     catapultL.setPower(1);
                     catapultR.setPower(1);
-                    set_angle_degrees = -85;
+                    //rainbow basket changes
+                    set_angle_degrees = -115;
                     NEW_F = Higher_F;
                     NEW_PP = Higher_PP;
 
