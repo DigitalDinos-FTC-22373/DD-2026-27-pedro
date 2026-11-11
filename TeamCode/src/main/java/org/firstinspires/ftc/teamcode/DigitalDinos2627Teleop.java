@@ -34,22 +34,28 @@ public class  DigitalDinos2627Teleop  extends OpMode {
         if (gamepad1.aWasPressed()){
             bbb.shoot();
         }
-        if (gamepad1.aWasReleased()){
-            bbb.lower();
-        }
         if (gamepad1.bWasPressed()){
-            bbb.block();
-        }
-        if (gamepad1.bWasReleased()){
             bbb.lower();
         }
-        if (gamepad1.xWasPressed()){
-            bbb.flower();
-        }
-        if (gamepad1.xWasReleased()){
-            bbb.lower();
-        }
+//        if (gamepad1.bWasPressed()){
+//            bbb.block();
+//        }
+////        if (gamepad1.bWasReleased()){
+////            bbb.lower();
+////        }
+//        if (gamepad1.xWasPressed()){
+//            bbb.flower();
+//        }
+////        if (gamepad1.xWasReleased()){
+////            bbb.lower();
+////        }
+
+        telemetry.addData("catapult Left Position", bbb.getCatapultLPos());
+        telemetry.addData("catapult Right Position", bbb.getCatapultRPos());
     }
+
+
+
 
 
 }

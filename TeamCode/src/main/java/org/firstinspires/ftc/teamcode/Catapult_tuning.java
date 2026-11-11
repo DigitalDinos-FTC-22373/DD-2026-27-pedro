@@ -48,8 +48,8 @@ public class Catapult_tuning extends LinearOpMode {
         // Get reference to DC motor.
         // Since we are using the Control Hub or Expansion Hub,
         // cast this motor to a DcMotorEx object.
-        catapultL = (DcMotorEx)hardwareMap.get(DcMotor.class, "catapult_left");
-        catapultR = (DcMotorEx)hardwareMap.get(DcMotor.class, "catapult_right");
+        catapultL = hardwareMap.get(DcMotorEx.class, "catapult_left");
+        catapultR = hardwareMap.get(DcMotorEx.class, "catapult_right");
 
         intake = (DcMotorEx)hardwareMap.get(DcMotor.class, "intake");
 //        FtcDashboard dashboard = FtcDashboard.getInstance();
