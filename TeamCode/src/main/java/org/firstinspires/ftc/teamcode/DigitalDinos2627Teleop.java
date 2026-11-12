@@ -18,7 +18,14 @@ public class  DigitalDinos2627Teleop  extends OpMode {
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
     }
-
+    @Override
+    public void init_loop(){
+        bbb.catapultUpdate();
+    }
+    @Override
+    public void start(){
+        bbb.lower();
+    }
     @Override
     public void loop() {
         DrivePowers powers = ManualDrive.fieldCentric(
@@ -37,19 +44,31 @@ public class  DigitalDinos2627Teleop  extends OpMode {
         if (gamepad1.bWasPressed()){
             bbb.lower();
         }
+
+        if (gamepad1.dpadDownWasPressed()){
+            bbb.intakeOn();
+        }
+        if (gamepad1.dpadUpWasPressed()){
+            bbb.intakeOut();
+        }
+        if (gamepad1.dpadRightWasPressed()){
+            bbb.intakeOff();
+        }
 //        if (gamepad1.bWasPressed()){
 //            bbb.block();
 //        }
-////        if (gamepad1.bWasReleased()){
-////            bbb.lower();
-////        }
-//        if (gamepad1.xWasPressed()){
-//            bbb.flower();
+//        if (gamepad1.bWasReleased()){
+//            bbb.lower();
 //        }
-////        if (gamepad1.xWasReleased()){
-////            bbb.lower();
-////        }
+        if (gamepad1.xWasPressed()){
+            bbb.flower();
+        }
+        if (gamepad1.xWasReleased()){
+            bbb.lower();
+        }
 
+
+        bbb.catapultUpdate();
         telemetry.addData("catapult Left Position", bbb.getCatapultLPos());
         telemetry.addData("catapult Right Position", bbb.getCatapultRPos());
     }
