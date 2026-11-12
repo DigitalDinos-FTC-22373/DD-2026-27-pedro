@@ -17,14 +17,20 @@ public class  DigitalDinos2627Teleop  extends OpMode {
         follower = Constants.create(hardwareMap);
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
+        bbb.positionInit();
     }
     @Override
     public void init_loop(){
+//       double setPos =  bbb.init_loop();
+//        telemetry.addData(" catapult set Position", setPos);
+//        telemetry.addData("Catapult PosL", bbb.getCatapultLPos());
+//        telemetry.addData("Catapult PosR", bbb.getCatapultRPos());
+//        telemetry.update();
         bbb.catapultUpdate();
     }
     @Override
     public void start(){
-        bbb.lower();
+        bbb.setBottom();
     }
     @Override
     public void loop() {
@@ -71,6 +77,7 @@ public class  DigitalDinos2627Teleop  extends OpMode {
         bbb.catapultUpdate();
         telemetry.addData("catapult Left Position", bbb.getCatapultLPos());
         telemetry.addData("catapult Right Position", bbb.getCatapultRPos());
+
     }
 
 

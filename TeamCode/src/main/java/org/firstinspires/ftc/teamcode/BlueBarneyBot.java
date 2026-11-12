@@ -17,6 +17,8 @@ public class BlueBarneyBot {
     public static int CATAPULT_SHOOT_POS = -165;
     public static int CATAPULT_BLOCK_POS = -230;
     public static int CATAPULT_FLOWER_POS = -200;
+
+    public static int CATAPULT_INIT_POS = 100;
     public static double DEFAULT_P = 0.7;
     public static double DEFAULT_F = 300;// 200 previous
     public static double FAST_F = 510;
@@ -33,6 +35,8 @@ public class BlueBarneyBot {
     private int setPosition;
     private double set_P;
     private double set_F;
+
+    private boolean bottomFound = false;
 
 
     public void init(HardwareMap hardwareMap) {
@@ -55,7 +59,35 @@ public class BlueBarneyBot {
         catapult_right.setDirection(DcMotor.Direction.REVERSE); // direrction good
         catapult_right.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        set_F = FAST_F;
+        set_P = FAST_P;
+        setPosition = 0;
+        setPower = 1;
     }
+
+
+    public int init_loop() {
+        if (!bottomFound) {
+            int curPos = catapult_right.getCurrentPosition();
+            int diff  = Math.abs(curPos - setPosition);
+            if (diff < 20 ){
+                setPosition += 20;
+            }
+
+            if (diff > 30 ){
+                catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                setPosition = 0;
+                bottomFound = true;
+            }
+        }
+
+        catapultUpdate();
+    return setPosition;
+    }
+
+
 
     public void shoot() {
         set_F = FAST_F;
@@ -83,19 +115,19 @@ public class BlueBarneyBot {
     }
 
     public void lower() {
-        set_F = DEFAULT_F;
-        set_P = DEFAULT_P;
+        set_F = SLOW_F;
+        set_P = SLOW_P;
         setPosition = CATAPULT_DOWN_POS;
-        setPower = 1;
-        intake.setPower(0.75);
+        setPower = 0.5;
+        intake.setPower(1);
     }
 
     public void intakeOn(){
-        intake.setPower(0.75);
+        intake.setPower(1);
     }
 
     public void intakeOut(){
-        intake.setPower(-0.75);
+        intake.setPower(-1);
     }
     public void intakeOff(){
         intake.setPower(0);
@@ -119,12 +151,25 @@ public class BlueBarneyBot {
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    public void positionInit(){
+        set_P = DEFAULT_P;
+        set_F = DEFAULT_F;
+        setPosition = CATAPULT_INIT_POS;
+        setPower = 0.75;
+        intake.setPower(1);
+    }
+
      public double getCatapultLPos(){
         return catapult_left.getCurrentPosition();
      }
 
     public double getCatapultRPos(){
         return catapult_right.getCurrentPosition();
+    }
+
+    public void setBottom(){
+        catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 
