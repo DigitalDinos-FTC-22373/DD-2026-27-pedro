@@ -14,11 +14,11 @@ public class BlueBarneyBot {
 
     // CONSTANTS
     public static int CATAPULT_DOWN_POS = 0;// it was 50
-    public static int CATAPULT_SHOOT_POS = -165;
-    public static int CATAPULT_BLOCK_POS = -230;
-    public static int CATAPULT_FLOWER_POS = -200;
+    public static int CATAPULT_SHOOT_POS = 165;
+    public static int CATAPULT_BLOCK_POS = 230;
+    public static int CATAPULT_FLOWER_POS = 200;
 
-    public static int CATAPULT_INIT_POS = 100;
+    public static int CATAPULT_INIT_POS = -100;
     public static double DEFAULT_P = 0.7;
     public static double DEFAULT_F = 300;// 200 previous
     public static double FAST_F = 510;
@@ -50,13 +50,13 @@ public class BlueBarneyBot {
 
         catapult_left.setPower(0.5);
         catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catapult_left.setDirection(DcMotor.Direction.FORWARD);
+        catapult_left.setDirection(DcMotor.Direction.REVERSE);
         catapult_left.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         catapult_right.setPower(0.5);
         catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catapult_right.setDirection(DcMotor.Direction.REVERSE); // direrction good
+        catapult_right.setDirection(DcMotor.Direction.FORWARD); // direrction good
         catapult_right.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
