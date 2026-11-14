@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +20,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 //@Config
 @TeleOp
 public class Catapult_tuning extends LinearOpMode {
-
+    // CONSTANTS
+    public static int CATAPULT_DOWN_POS = 0;// it was 50
+    public static int CATAPULT_SHOOT_POS = 165;
+    public static double SHOOT_POWER = 0.25;
     // our DC motor
     DcMotorEx catapultL;
     DcMotorEx catapultR;
@@ -30,13 +34,6 @@ public class Catapult_tuning extends LinearOpMode {
     public double NEW_D = -1.7;
     public double NEW_F = 252;
 
-    public double lowering_PP = 0.84;
-
-     public double lowering_F = 252;
-
-     //rainbow basket changes
-     public double Higher_F = 400;
-     public double Higher_PP = 0.9;
     // These values are for illustration only; they must be set
     // and adjusted for each motor based on its planned usage.
     public double set_angle_degrees = 30;
@@ -57,18 +54,18 @@ public class Catapult_tuning extends LinearOpMode {
 
         // wait for start command
         waitForStart();
+        setposition = 0;
         catapultL.setPower(0.1);
         catapultL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catapultL.setDirection(DcMotor.Direction.FORWARD);
+        catapultL.setDirection(DcMotor.Direction.REVERSE);
         catapultL.setTargetPosition(setposition);
         catapultL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         catapultR.setPower(0.1);
         catapultR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catapultR.setDirection(DcMotor.Direction.REVERSE); // direrction good
+        catapultR.setDirection(DcMotor.Direction.FORWARD);
         catapultR.setTargetPosition(setposition);
         catapultR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
 
         intake.setPower(0);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -76,12 +73,10 @@ public class Catapult_tuning extends LinearOpMode {
         // Get the PIDF coefficients for the RUN_TO_POSITION RunMode.
         PIDFCoefficients pidfOrig = catapultL.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
 
-
         // Change coefficients using methods included with DcMotorEx class.
         PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
         catapultL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
         catapultR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
-
 
         catapultL.setPositionPIDFCoefficients(NEW_PP);
         catapultR.setPositionPIDFCoefficients(NEW_PP);
@@ -95,22 +90,11 @@ public class Catapult_tuning extends LinearOpMode {
         while(opModeIsActive()) {
 
             if (gamepad1.aWasPressed()) {
-                if (set_angle_degrees < -50) {
-                    set_angle_degrees = 30;
-                    catapultL.setPower(0.1);
-                    catapultR.setPower(0.1);
-                    NEW_F = lowering_F;
-                    NEW_PP = lowering_PP;
-                } else if (set_angle_degrees > -50) {
-                    catapultL.setPower(1);
-                    catapultR.setPower(1);
-                    //rainbow basket changes
-                    set_angle_degrees = -115;
-                    NEW_F = Higher_F;
-                    NEW_PP = Higher_PP;
-
+                if (setposition < 50) {
+                    setposition = CATAPULT_SHOOT_POS; // 165
+                } else if (setposition > 50) {
+                    setposition = CATAPULT_DOWN_POS; // 0
                 }
-
             }
 
             if (gamepad1.bWasPressed()) {
@@ -151,19 +135,25 @@ public class Catapult_tuning extends LinearOpMode {
                 NEW_D -= 0.01;
             }
 
-
-            setposition =  (int)(set_angle_degrees * TICKS_PER_DEGREE);
+            if (gamepad1.x) {
+                SHOOT_POWER += 0.01;
+            }
+            if (gamepad1.y) {
+                SHOOT_POWER -= 0.01;
+            }
 
             pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
             catapultL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
-
             catapultR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
             catapultL.setPositionPIDFCoefficients(NEW_PP);
-            catapultL.setTargetPosition(setposition);
-
             catapultR.setPositionPIDFCoefficients(NEW_PP);
+
+            catapultL.setTargetPosition(setposition);
             catapultR.setTargetPosition(setposition);
+
+            catapultL.setPower(SHOOT_POWER);
+            catapultR.setPower(SHOOT_POWER);
 
             pidfModified = catapultL.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -176,9 +166,12 @@ public class Catapult_tuning extends LinearOpMode {
             telemetry.addData("New F",  NEW_F);
             telemetry.addData("New D",  NEW_D);
             telemetry.addData("New P",  NEW_P);
+            telemetry.addData("power", SHOOT_POWER);
             telemetry.addData("catapultL position",  catapultL.getCurrentPosition());
             telemetry.addData("catapultR position",  catapultR.getCurrentPosition());
             telemetry.addData("setangledegrees", set_angle_degrees);
+            telemetry.addData("targetPosTolerance", catapultL.getTargetPositionTolerance());
+            telemetry.addData("velocity", catapultL.getVelocity());
             telemetry.update();
         }
     }
