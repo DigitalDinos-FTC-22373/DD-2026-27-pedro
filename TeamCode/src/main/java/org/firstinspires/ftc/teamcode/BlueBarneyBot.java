@@ -16,7 +16,7 @@ public class BlueBarneyBot {
     public static int CATAPULT_DOWN_POS = -15;
     public static int CATAPULT_SHOOT_POS = 165;
     public static int CATAPULT_BLOCK_POS = 250;
-    public static int CATAPULT_FLOWER_POS = 220;
+    public static int CATAPULT_FLOWER_POS = 215; //220
     public static double DEFAULT_P = 0.7;  // Lowering and blocking
     public static double DEFAULT_F = 300;
     public static double FAST_F = 510; // Shooting
@@ -29,6 +29,8 @@ public class BlueBarneyBot {
     private DcMotorEx catapult_right;
 
     private int setPosition;
+
+    private int setFlowerPos;
     private double set_P;
     private double set_F;
 
@@ -89,6 +91,10 @@ public class BlueBarneyBot {
         set_P = DEFAULT_P;
         setPosition = CATAPULT_DOWN_POS;
         intake.setPower(1);
+    }
+
+    public void adjustCatapultpos(int increment){
+        setPosition = setPosition + increment;
     }
 
     public void intakeOn(){

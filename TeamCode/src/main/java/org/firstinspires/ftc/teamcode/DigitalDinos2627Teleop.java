@@ -55,6 +55,13 @@ public class DigitalDinos2627Teleop extends OpMode {
         if (gamepad1.dpadRightWasPressed()) {bbb.intakeOff();}
         if (gamepad1.dpadLeftWasPressed()) {bbb.intakeOff();}
 
+        if (gamepad1.rightBumperWasPressed()){
+           bbb.adjustCatapultpos(5);
+        }
+        if (gamepad1.leftBumperWasPressed()){
+            bbb.adjustCatapultpos(-5);
+        }
+
         bbb.catapultUpdate();
 
         telemetry.addData("catapult Left Position", bbb.getCatapultLPos());
