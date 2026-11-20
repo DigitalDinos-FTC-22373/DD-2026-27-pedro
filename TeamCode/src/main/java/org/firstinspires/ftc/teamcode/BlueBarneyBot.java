@@ -15,7 +15,7 @@ public class BlueBarneyBot {
 
     // CONSTANTS
     public static int CATAPULT_DOWN_POS = -20;
-    public static int CATAPULT_SHOOT_POS = 165;
+    public static int CATAPULT_SHOOT_POS = 200;
     public static int CATAPULT_BLOCK_POS = 250;
     public static int CATAPULT_FLOWER_POS = 200; //220
     public static double DEFAULT_P = 0.7;  // Lowering and blocking
@@ -40,6 +40,7 @@ public class BlueBarneyBot {
     private double set_P;
     private double set_F;
 
+    private boolean blocking;
     private boolean arm_is_up;
     public void init(HardwareMap hardwareMap) {
 
@@ -56,19 +57,14 @@ public class BlueBarneyBot {
         catapult_right = hardwareMap.get(DcMotorEx.class, "catapult_right");
 
         catapult_left.setPower(1.0);
-        catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         catapult_left.setDirection(DcMotor.Direction.REVERSE);
         catapult_left.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         catapult_right.setPower(1.0);
-        catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         catapult_right.setDirection(DcMotor.Direction.FORWARD); // direrction good
         catapult_right.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-
 
         set_F = DEFAULT_F;
         set_P = DEFAULT_P;
@@ -85,6 +81,8 @@ public class BlueBarneyBot {
         setPosition = CATAPULT_SHOOT_POS;
         setPosTolerance = 10;
         intake.setPower(0);
+        blocking = false;
+
     }
 
     public void block() {
@@ -93,6 +91,7 @@ public class BlueBarneyBot {
         setPosition = CATAPULT_BLOCK_POS;
         setPosTolerance = 5;
         intake.setPower(0);
+        blocking = true;
     }
 
     public void flower(){
@@ -101,6 +100,8 @@ public class BlueBarneyBot {
         setPosition = CATAPULT_FLOWER_POS;
         setPosTolerance = 2;
         intake.setPower(0);
+        blocking = false;
+
     }
 
     public void lower() {
@@ -109,6 +110,8 @@ public class BlueBarneyBot {
         setPosition = CATAPULT_DOWN_POS;
         setPosTolerance = 2;
         intake.setPower(1);
+        blocking = false;
+
     }
 
     public void arm_up(){
@@ -128,6 +131,14 @@ public class BlueBarneyBot {
         else {
             arm_up();
         }
+    }
+    public boolean isBlocking(){
+        return blocking;
+    }
+
+    public void resetCatapultEncoders(){
+        catapult_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapult_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void adjustCatapultpos(int increment){

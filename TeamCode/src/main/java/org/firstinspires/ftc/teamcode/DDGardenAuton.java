@@ -30,7 +30,7 @@ public class DDGardenAuton extends OpMode {
     private final Pose shootPose = p.of(59, 20, 270);
     private final Pose gardenPose = p.of(10, 10, 180);
     private final Pose gardenControlPose = p.of(64, 23, 0);
-    private final Pose flowerPose = p.of(13, 55, 180);
+    private final Pose flowerPose = p.of(13, 48, 180);
     private final Pose flowerControlPose = p.of(25, 56, 0);
     private final Pose parkControlPose = p.of(8, 48, 0);
     private final Pose parkPose = p.of(10, 93, 0);
@@ -38,13 +38,13 @@ public class DDGardenAuton extends OpMode {
         return line(startPose, shootPose).linear(startPose, shootPose);
     }
     private Path ShootToGarden() {
-        return curve(shootPose, gardenControlPose, gardenPose).linear(shootPose, gardenPose);
+        return curve(shootPose, gardenControlPose, gardenPose).constant(gardenPose);
     }
     private Path GardenToShoot() {
-        return curve(gardenPose, gardenControlPose, startPose).linear(gardenPose, startPose);
+        return curve(gardenPose, gardenControlPose, shootPose).linear(gardenPose, shootPose);
     }
     private Path ShootToFlower() {
-        return curve(shootPose, flowerControlPose, flowerPose).linear(shootPose, flowerPose);
+        return curve(shootPose, flowerControlPose, flowerPose).constant(flowerPose);
     }
     private Path FlowerToPark() {
         return curve(flowerPose, parkControlPose, parkPose).linear(flowerPose, parkPose);
@@ -52,6 +52,10 @@ public class DDGardenAuton extends OpMode {
 
     private Path ShootToPark(){
         return curve(shootPose, parkControlPose, parkPose).linear(shootPose,parkPose);
+    }
+
+    private Path FlowerToShoot(){
+        return line(flowerPose,shootPose).linear(flowerPose,shootPose);
     }
 
     Command shoot = sequential(
@@ -65,25 +69,34 @@ public class DDGardenAuton extends OpMode {
 
     private Command autoRoutine() {
         return sequential(
-                instant(() -> {bbb.intakeOn();}),
-                shoot,
-                instant(() -> {bbb.intakeOn();}),
+//                instant(() -> {bbb.intakeOn();}),
+                //Move from start and shoot
                 follow(follower, StartToShoot()),
+                shoot,
+
+                //Go to flower, pick up pollen and shoot
+                instant(() -> {bbb.intakeOn();}),
+                instant(() -> {bbb.arm_down();}),
+                waitMs(500),
+                race(follow(follower, ShootToFlower()),
+                        waitMs(3000)),
+                waitMs(3000),
+                race(follow(follower, FlowerToShoot()),
+                        waitMs(2000)),
+
+                instant(() -> {bbb.arm_up();}),
+                shoot,
+                //Go to garden, pick up pollen and shoot
+                instant(() -> {bbb.intakeOn();}),
+                race(follow(follower, ShootToGarden()),
+                        waitMs(3000)),
+                waitMs(2000),
+                race(follow(follower, GardenToShoot()),
+                        waitMs(3000)),
+                shoot,
+
+                //Park
                 follow(follower,ShootToPark())
-//                race(follow(follower, ShootToGarden()),
-//                        waitMs(3000)),
-//                waitMs(2000),
-//                race(follow(follower, GardenToShoot()),
-//                        waitMs(3000)),
-//                shoot
-////                instant(() -> {bbb.intakeOn();}),
-////                instant(() -> {bbb.arm_down();}),
-////                race(follow(follower, ShootToFlower()),
-////                        waitMs(3000)),
-////                waitMs(3000),
-////                instant(() -> {bbb.arm_up();}),
-////                instant(() -> {bbb.intakeOff();}),
-////                follow(follower, FlowerToPark())
         );
     }
 

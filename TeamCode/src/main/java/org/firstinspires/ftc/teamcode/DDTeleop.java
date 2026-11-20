@@ -14,8 +14,14 @@ public class DDTeleop extends OpMode {
     //CONSTANTS
     private static Pose2d NORTH_HIVE_POS = new Pose2d(59,94,0);
     private static Pose2d SOUTH_HIVE_POS = new Pose2d(59,50,0);
+
+    private static Pose2d NORTH_HIVE_POS_OPP = new Pose2d(85,94,0);
+    private static Pose2d SOUTH_HIVE_POS_OPP = new Pose2d(85,50,0);
     private Follower follower;
     private BlueBarneyBot bbb;
+
+    double locked_heading;
+    private boolean heading_locked;
     private final PIDController headingController = new PIDController(2.0, 0.0, 0.1);
 
     @Override
@@ -50,6 +56,18 @@ public class DDTeleop extends OpMode {
         }
         double targetHeading = Math.atan2(targetHivePos.getY() - follower.pose().y(),
                 targetHivePos.getX() - follower.pose().x()) + Math.PI;
+
+        if (bbb.isBlocking()) {
+            if (follower.pose().y() < 72) {
+                targetHivePos = SOUTH_HIVE_POS_OPP;
+            } else {
+                targetHivePos = NORTH_HIVE_POS_OPP;
+            }
+            targetHeading = Math.atan2(targetHivePos.getY() - follower.pose().y(),
+                    targetHivePos.getX() - follower.pose().x());
+
+        }
+
         if (Math.hypot(gamepad1.right_stick_x, gamepad1.right_stick_y) > 0.4) {
             targetHeading = Math.atan2(-gamepad1.right_stick_x, -gamepad1.right_stick_y);
         }
@@ -65,6 +83,10 @@ public class DDTeleop extends OpMode {
                 follower.pose().heading()
         );
 
+        if (heading_locked){
+            targetHeading = locked_heading;
+        }
+
         follower.manual(powers);
         follower.update();
 
@@ -74,30 +96,29 @@ public class DDTeleop extends OpMode {
         if (gamepad1.bWasPressed()) {bbb.block();}
         if (gamepad1.bWasReleased()) {bbb.lower();}
 
-        if (gamepad1.xWasPressed()) {bbb.flower();}
-        if (gamepad1.xWasReleased()) {bbb.lower();}
+        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {bbb.flower();}
+        if (gamepad1.xWasReleased() || gamepad2.xWasReleased()) {bbb.lower();}
 
-        if (gamepad1.dpadDownWasPressed()) {bbb.intakeOn();}
-        if (gamepad1.dpadUpWasPressed()) {bbb.intakeOut();}
-        if (gamepad1.dpadRightWasPressed()) {bbb.intakeOff();}
-        if (gamepad1.dpadLeftWasPressed()) {bbb.intakeOff();}
+        if (gamepad1.dpadDownWasPressed() || gamepad2.dpadDownWasPressed()) {bbb.intakeOn();}
+        if (gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed()) {bbb.intakeOut();}
+        if (gamepad1.dpadRightWasPressed() || gamepad2.dpadRightWasPressed()) {bbb.intakeOff();}
+        if (gamepad1.dpadLeftWasPressed() || gamepad2.dpadLeftWasPressed()) {bbb.intakeOff();}
 
-        if (gamepad1.rightBumperWasPressed()){
-           bbb.adjustCatapultpos(5);
-        }
-        if (gamepad1.leftBumperWasPressed()){
-            bbb.adjustCatapultpos(-5);
-        }
+        if (gamepad1.right_bumper || gamepad2.right_bumper){bbb.adjustCatapultpos(1);}
+        if (gamepad1.left_bumper || gamepad2.left_bumper){bbb.adjustCatapultpos(-1);}
 
-        if(gamepad1.backWasPressed()){
-            follower.setHeading(0);
-        }
+        if(gamepad1.backWasPressed() || gamepad2.backWasPressed()){follower.setHeading(0);}
 
-        if (gamepad1.yWasPressed()){
-            bbb.toggle_arm();
+        if (gamepad1.yWasPressed() || gamepad2.yWasPressed()){bbb.toggle_arm();}
+
+        if (gamepad1.leftTriggerWasPressed()){
+            locked_heading = follower.pose().heading();
+            heading_locked = !heading_locked;
         }
 
-
+        if (gamepad1.startWasPressed() || gamepad2.startWasPressed()){
+            bbb.resetCatapultEncoders();
+        }
 
         bbb.catapultUpdate();
 
@@ -106,6 +127,7 @@ public class DDTeleop extends OpMode {
         telemetry.addData("Follower X", follower.pose().x());
         telemetry.addData("Follower Y", follower.pose().y());
         telemetry.addData("Heading", follower.pose().heading());
+        telemetry.addData("Heading locked", heading_locked);
         telemetry.update();
     }
 }

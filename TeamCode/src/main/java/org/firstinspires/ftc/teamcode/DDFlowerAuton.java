@@ -28,10 +28,10 @@ public class DDFlowerAuton extends OpMode {
 
     private final Pose startPose = p.of(59, 136, 90);
     private final Pose shootPose = p.of(59, 124, 90);
-    private final Pose flowerPose = p.of(56, 131.5, 90);
+    private final Pose flowerPose = p.of(48, 131.5, 90);
     private final Pose flowerControlPose = p.of(59, 100, 0);
     private final Pose parkControlPose = p.of(50, 97, 0);
-    private final Pose parkPose = p.of(11, 124, 0);
+    private final Pose parkPose = p.of(9, 120, 0);
     private Path StartToShoot() {
         return line(startPose, shootPose).linear(startPose, shootPose);
     }
@@ -47,6 +47,8 @@ public class DDFlowerAuton extends OpMode {
     }
 
     Command shoot = sequential(
+            instant(() -> {bbb.intakeOff();}),
+            waitMs(500),
             instant(() -> {bbb.shoot();}),
             waitMs(1000),
             instant(() -> {bbb.lower();})
@@ -62,9 +64,9 @@ public class DDFlowerAuton extends OpMode {
                         waitMs(3000)),
                 waitMs(3000),
                 instant(() -> {bbb.intakeOff();}),
-                instant(() -> {bbb.arm_up();}),
                 race(follow(follower, FlowerToShoot()),
                         waitMs(3000)),
+                instant(() -> {bbb.arm_up();}),
                 shoot,
                 follow(follower, ShootToPark())
         );
@@ -90,6 +92,7 @@ public class DDFlowerAuton extends OpMode {
     @Override
     public void loop() {
         follower.update();
+        bbb.catapultUpdate();
         Scheduler.execute();
 
         telemetry.addData("X", follower.pose().x());
