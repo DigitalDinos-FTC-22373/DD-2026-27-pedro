@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class BlueBarneyBot {
@@ -16,17 +17,21 @@ public class BlueBarneyBot {
     public static int CATAPULT_DOWN_POS = -15;
     public static int CATAPULT_SHOOT_POS = 165;
     public static int CATAPULT_BLOCK_POS = 250;
-    public static int CATAPULT_FLOWER_POS = 215; //220
+    public static int CATAPULT_FLOWER_POS = 230; //220
     public static double DEFAULT_P = 0.7;  // Lowering and blocking
     public static double DEFAULT_F = 300;
-    public static double FAST_F = 510; // Shooting
+    public static double FAST_F = 530; // Shooting
     public static double FAST_P = 1;
     public static double SLOW_F = 475;  // Flower
     public static double SLOW_P = 0.17;
 
+
+
     private DcMotor intake;
     private DcMotorEx catapult_left;
     private DcMotorEx catapult_right;
+
+    private Servo flower_arm;
 
     private int setPosition;
 
@@ -34,11 +39,16 @@ public class BlueBarneyBot {
     private double set_P;
     private double set_F;
 
+    private boolean arm_is_up;
     public void init(HardwareMap hardwareMap) {
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake.setDirection(DcMotor.Direction.REVERSE);
         intake.setPower(0);
+
+        flower_arm = hardwareMap.get(Servo.class, "flower_arm");
+        flower_arm.setDirection(Servo.Direction.FORWARD);
+        flower_arm.setPosition(0);
 
         //Vineeth made the change
         catapult_left = hardwareMap.get(DcMotorEx.class, "catapult_left");
@@ -55,6 +65,9 @@ public class BlueBarneyBot {
         catapult_right.setDirection(DcMotor.Direction.FORWARD); // direrction good
         catapult_right.setTargetPosition(CATAPULT_DOWN_POS);
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
 
         set_F = DEFAULT_F;
         set_P = DEFAULT_P;
@@ -91,6 +104,25 @@ public class BlueBarneyBot {
         set_P = DEFAULT_P;
         setPosition = CATAPULT_DOWN_POS;
         intake.setPower(1);
+    }
+
+    public void arm_up(){
+        flower_arm.setPosition(1);
+        arm_is_up = true;
+    }
+
+    public void arm_down(){
+        flower_arm.setPosition(0.4);
+        arm_is_up = false;
+    }
+
+    public void toggle_arm(){
+        if (arm_is_up){
+            arm_down();
+        }
+        else {
+            arm_up();
+        }
     }
 
     public void adjustCatapultpos(int increment){

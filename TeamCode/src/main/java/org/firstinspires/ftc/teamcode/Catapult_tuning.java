@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class Catapult_tuning extends LinearOpMode {
     // CONSTANTS
     public static int CATAPULT_DOWN_POS = 0;// it was 50
-    public static int CATAPULT_SHOOT_POS = 165;
+    public static int CATAPULT_SHOOT_POS = 230;
     public static double SHOOT_POWER = 0.25;
     // our DC motor
     DcMotorEx catapultL;
