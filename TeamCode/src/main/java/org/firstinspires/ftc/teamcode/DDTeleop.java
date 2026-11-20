@@ -103,6 +103,9 @@ public class DDTeleop extends OpMode {
 
         telemetry.addData("catapult Left Position", bbb.getCatapultLPos());
         telemetry.addData("catapult Right Position", bbb.getCatapultRPos());
+        telemetry.addData("Follower X", follower.pose().x());
+        telemetry.addData("Follower Y", follower.pose().y());
+        telemetry.addData("Heading", follower.pose().heading());
         telemetry.update();
     }
 }

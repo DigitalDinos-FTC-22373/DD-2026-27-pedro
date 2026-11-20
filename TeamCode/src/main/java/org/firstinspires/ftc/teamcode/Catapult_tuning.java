@@ -129,10 +129,10 @@ public class Catapult_tuning extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up){
-                NEW_D += 0.01;
+                CATAPULT_SHOOT_POS += 1;
             }
             if (gamepad1.dpad_down){
-                NEW_D -= 0.01;
+                CATAPULT_SHOOT_POS -= 1;
             }
 
             if (gamepad1.x) {
@@ -172,6 +172,7 @@ public class Catapult_tuning extends LinearOpMode {
             telemetry.addData("setangledegrees", set_angle_degrees);
             telemetry.addData("targetPosTolerance", catapultL.getTargetPositionTolerance());
             telemetry.addData("velocity", catapultL.getVelocity());
+            telemetry.addData("Shooter set position", CATAPULT_SHOOT_POS);
             telemetry.update();
         }
     }

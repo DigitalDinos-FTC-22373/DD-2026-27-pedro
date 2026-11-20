@@ -14,16 +14,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class BlueBarneyBot {
 
     // CONSTANTS
-    public static int CATAPULT_DOWN_POS = -15;
+    public static int CATAPULT_DOWN_POS = -20;
     public static int CATAPULT_SHOOT_POS = 165;
     public static int CATAPULT_BLOCK_POS = 250;
-    public static int CATAPULT_FLOWER_POS = 230; //220
+    public static int CATAPULT_FLOWER_POS = 200; //220
     public static double DEFAULT_P = 0.7;  // Lowering and blocking
     public static double DEFAULT_F = 300;
-    public static double FAST_F = 530; // Shooting
-    public static double FAST_P = 1;
-    public static double SLOW_F = 475;  // Flower
-    public static double SLOW_P = 0.17;
+    public static double FAST_F = 400; // Shooting
+    public static double FAST_P = 1.9;
+    public static double SLOW_F = 550;  // Flower
+    public static double SLOW_P = 0.2;
 
 
 
@@ -34,6 +34,7 @@ public class BlueBarneyBot {
     private Servo flower_arm;
 
     private int setPosition;
+    private int setPosTolerance;
 
     private int setFlowerPos;
     private double set_P;
@@ -82,6 +83,7 @@ public class BlueBarneyBot {
         set_F = FAST_F;
         set_P = FAST_P;
         setPosition = CATAPULT_SHOOT_POS;
+        setPosTolerance = 10;
         intake.setPower(0);
     }
 
@@ -89,6 +91,7 @@ public class BlueBarneyBot {
         set_F = DEFAULT_F;
         set_P = DEFAULT_P;
         setPosition = CATAPULT_BLOCK_POS;
+        setPosTolerance = 5;
         intake.setPower(0);
     }
 
@@ -96,6 +99,7 @@ public class BlueBarneyBot {
         set_F = SLOW_F;
         set_P = SLOW_P;
         setPosition = CATAPULT_FLOWER_POS;
+        setPosTolerance = 2;
         intake.setPower(0);
     }
 
@@ -103,6 +107,7 @@ public class BlueBarneyBot {
         set_F = DEFAULT_F;
         set_P = DEFAULT_P;
         setPosition = CATAPULT_DOWN_POS;
+        setPosTolerance = 2;
         intake.setPower(1);
     }
 
@@ -146,17 +151,18 @@ public class BlueBarneyBot {
         catapult_left.setPositionPIDFCoefficients(set_P);
         catapult_right.setPositionPIDFCoefficients(set_P);
 
+        catapult_left.setTargetPositionTolerance(setPosTolerance);
+        catapult_right.setTargetPositionTolerance(setPosTolerance);
+
         catapult_left.setTargetPosition(setPosition);
         catapult_right.setTargetPosition(setPosition);
 
         catapult_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-
     public double getCatapultLPos(){
         return catapult_left.getCurrentPosition();
      }
-
     public double getCatapultRPos(){
         return catapult_right.getCurrentPosition();
     }
