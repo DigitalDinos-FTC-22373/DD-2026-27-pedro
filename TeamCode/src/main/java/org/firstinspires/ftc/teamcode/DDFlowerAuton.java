@@ -77,6 +77,7 @@ public class DDFlowerAuton extends OpMode {
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
         bbb.arm_up();
+        bbb.resetCatapultEncoders();
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);

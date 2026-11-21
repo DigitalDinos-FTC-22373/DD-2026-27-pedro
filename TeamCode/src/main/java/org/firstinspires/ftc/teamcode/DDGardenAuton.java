@@ -29,8 +29,10 @@ public class DDGardenAuton extends OpMode {
     private final Pose startPose = p.of(59, 8, 270);
     private final Pose shootPose = p.of(59, 20, 270);
     private final Pose gardenPose = p.of(10, 10, 180);
-    private final Pose gardenControlPose = p.of(64, 23, 0);
-    private final Pose flowerPose = p.of(13, 48, 180);
+    private final Pose shootToGardenControlPose = p.of(50, 10, 0);
+    private final Pose gardenToShootControlPose = p.of(20, 20, 180);
+    private final Pose flowerPose = p.of(13, 52, 180);
+
     private final Pose flowerControlPose = p.of(25, 56, 0);
     private final Pose parkControlPose = p.of(8, 48, 0);
     private final Pose parkPose = p.of(10, 93, 0);
@@ -38,10 +40,10 @@ public class DDGardenAuton extends OpMode {
         return line(startPose, shootPose).linear(startPose, shootPose);
     }
     private Path ShootToGarden() {
-        return curve(shootPose, gardenControlPose, gardenPose).constant(gardenPose);
+        return curve(shootPose, shootToGardenControlPose, gardenPose).constant(gardenPose);
     }
     private Path GardenToShoot() {
-        return curve(gardenPose, gardenControlPose, shootPose).linear(gardenPose, shootPose);
+        return curve(gardenPose, gardenToShootControlPose, shootPose).linear(gardenPose, shootPose);
     }
     private Path ShootToFlower() {
         return curve(shootPose, flowerControlPose, flowerPose).constant(flowerPose);
@@ -69,31 +71,33 @@ public class DDGardenAuton extends OpMode {
 
     private Command autoRoutine() {
         return sequential(
-//                instant(() -> {bbb.intakeOn();}),
                 //Move from start and shoot
                 follow(follower, StartToShoot()),
                 shoot,
 
-                //Go to flower, pick up pollen and shoot
-                instant(() -> {bbb.intakeOn();}),
-                instant(() -> {bbb.arm_down();}),
-                waitMs(500),
-                race(follow(follower, ShootToFlower()),
-                        waitMs(3000)),
-                waitMs(3000),
-                race(follow(follower, FlowerToShoot()),
-                        waitMs(2000)),
-
-                instant(() -> {bbb.arm_up();}),
-                shoot,
-                //Go to garden, pick up pollen and shoot
-                instant(() -> {bbb.intakeOn();}),
-                race(follow(follower, ShootToGarden()),
-                        waitMs(3000)),
-                waitMs(2000),
-                race(follow(follower, GardenToShoot()),
-                        waitMs(3000)),
-                shoot,
+//                //Go to garden, pick up pollen and shoot
+//                instant(() -> {bbb.intakeOn();}),
+//
+//                instant(() -> {bbb.intakeOn();}),
+//                race(follow(follower, ShootToGarden()),
+//                        waitMs(4000)),
+//                waitMs(3000),
+//                race(follow(follower, GardenToShoot()),
+//                        waitMs(3000)),
+//                shoot,
+//
+//                //Go to flower, pick up pollen and shoot
+//                instant(() -> {bbb.intakeOn();}),
+//                instant(() -> {bbb.arm_down();}),
+//                waitMs(500),
+//                race(follow(follower, ShootToFlower()),
+//                        waitMs(3000)),
+//                waitMs(3000),
+//                race(follow(follower, FlowerToShoot()),
+//                        waitMs(2000)),
+//
+//                instant(() -> {bbb.arm_up();}),
+//                shoot,
 
                 //Park
                 follow(follower,ShootToPark())
@@ -105,6 +109,7 @@ public class DDGardenAuton extends OpMode {
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
         bbb.arm_up();
+        bbb.resetCatapultEncoders();
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);

@@ -22,6 +22,7 @@ public class DDTeleop extends OpMode {
 
     double locked_heading;
     private boolean heading_locked;
+    private boolean auto_aim;
     private final PIDController headingController = new PIDController(2.0, 0.0, 0.1);
 
     @Override
@@ -72,20 +73,22 @@ public class DDTeleop extends OpMode {
             targetHeading = Math.atan2(-gamepad1.right_stick_x, -gamepad1.right_stick_y);
         }
 
+        if (heading_locked){
+            targetHeading = locked_heading;
+        }
+
         DrivePowers powers = new DrivePowers(
                 -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x,
                 -gamepad1.right_stick_x);
 
-        powers = ManualDrive.headingLock(follower, headingController, powers, targetHeading);
+        if (auto_aim) {
+            powers = ManualDrive.headingLock(follower, headingController, powers, targetHeading);
+        }
         powers = ManualDrive.fieldCentric(
                 powers,
                 follower.pose().heading()
         );
-
-        if (heading_locked){
-            targetHeading = locked_heading;
-        }
 
         follower.manual(powers);
         follower.update();
@@ -95,6 +98,8 @@ public class DDTeleop extends OpMode {
 
         if (gamepad1.bWasPressed()) {bbb.block();}
         if (gamepad1.bWasReleased()) {bbb.lower();}
+
+        if (gamepad2.bWasPressed()) {auto_aim = !auto_aim;};
 
         if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {bbb.flower();}
         if (gamepad1.xWasReleased() || gamepad2.xWasReleased()) {bbb.lower();}
