@@ -27,6 +27,11 @@ public class BlueBarneyBot {
     public static double ARM_UP_POS = 1.0;
     public static double ARM_DOWN_POS = 0.425;
 
+    public static double FLOWER_F = 500;  // Flower 550
+    public static double FLOWER_P = 0.2;
+
+
+
     private DcMotor intake;
     private DcMotorEx catapult_left;
     private DcMotorEx catapult_right;
@@ -34,10 +39,14 @@ public class BlueBarneyBot {
     private int setPosition;
     private int setPosTolerance;
     private int setFlowerPos;
+
+    private double setPower = 1.0;
     private double set_P;
     private double set_F;
     private boolean blocking;
     private boolean arm_is_up;
+
+    private boolean flower_up;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -93,14 +102,21 @@ public class BlueBarneyBot {
         blocking = true;
     }
 
-    public void flower(){
-        set_F = SLOW_F;
-        set_P = SLOW_P;
-        setPosition = CATAPULT_FLOWER_POS;
-        setPosTolerance = 2;
-        intake.setPower(0);
-        blocking = false;
+    public void toggleflower() {
+        if (!flower_up) {
+            set_F = FLOWER_F;
+            set_P = FLOWER_P;
+            setPosition = CATAPULT_FLOWER_POS;
+            setPosTolerance = 2;
+            intake.setPower(0);
+            blocking = false;
+            flower_up = true;
+        } else {
+            lower();
+            flower_up = false;
+        }
     }
+
 
     public void lower() {
         set_F = DEFAULT_F;
@@ -147,6 +163,16 @@ public class BlueBarneyBot {
     }
     public void intakeOff(){
         intake.setPower(0);
+    }
+
+    public void shooterPoweradjust(double inc){
+        setPower += inc;
+        catapult_left.setPower(setPower);
+        catapult_right.setPower(setPower);
+
+    }
+    public double getShooterPow(){
+        return setPower;
     }
 
     public void catapultUpdate(){

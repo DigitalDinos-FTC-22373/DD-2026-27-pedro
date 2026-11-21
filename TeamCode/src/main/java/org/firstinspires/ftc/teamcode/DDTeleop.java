@@ -93,6 +93,13 @@ public class DDTeleop extends OpMode {
         follower.manual(powers);
         follower.update();
 
+        if (gamepad2.right_stick_y > 0.5){
+            bbb.shooterPoweradjust(-0.01);
+        }
+        if (gamepad2.right_stick_y < 0.5 ){
+            bbb.shooterPoweradjust(0.01);
+        }
+
         if (gamepad1.aWasPressed()) {bbb.shoot();}
         if (gamepad1.aWasReleased()) {bbb.lower();}
 
@@ -101,16 +108,15 @@ public class DDTeleop extends OpMode {
 
         if (gamepad2.bWasPressed()) {auto_aim = !auto_aim;};
 
-        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {bbb.flower();}
-        if (gamepad1.xWasReleased() || gamepad2.xWasReleased()) {bbb.lower();}
+        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {bbb.toggleflower();}
 
         if (gamepad1.dpadDownWasPressed() || gamepad2.dpadDownWasPressed()) {bbb.intakeOn();}
         if (gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed()) {bbb.intakeOut();}
         if (gamepad1.dpadRightWasPressed() || gamepad2.dpadRightWasPressed()) {bbb.intakeOff();}
         if (gamepad1.dpadLeftWasPressed() || gamepad2.dpadLeftWasPressed()) {bbb.intakeOff();}
 
-        if (gamepad1.right_bumper || gamepad2.right_bumper){bbb.adjustCatapultpos(1);}
-        if (gamepad1.left_bumper || gamepad2.left_bumper){bbb.adjustCatapultpos(-1);}
+        if (gamepad1.right_bumper || gamepad2.right_bumper){bbb.adjustCatapultpos(2);}
+        if (gamepad1.left_bumper || gamepad2.left_bumper){bbb.adjustCatapultpos(-2);}
 
         if(gamepad1.backWasPressed() || gamepad2.backWasPressed()){follower.setHeading(0);}
 
@@ -133,6 +139,7 @@ public class DDTeleop extends OpMode {
         telemetry.addData("Follower Y", follower.pose().y());
         telemetry.addData("Heading", follower.pose().heading());
         telemetry.addData("Heading locked", heading_locked);
+        telemetry.addData("shooter Power",bbb.getShooterPow());
         telemetry.update();
     }
 }
