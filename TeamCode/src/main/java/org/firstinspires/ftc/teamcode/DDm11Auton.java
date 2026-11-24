@@ -93,6 +93,11 @@ public class DDm11Auton extends OpMode {
     }
 
     @Override
+    public void init_loop(){
+        bbb.catapultUpdate();
+    }
+
+    @Override
     public void start() {schedule(autoRoutine());}
 
     @Override

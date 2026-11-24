@@ -109,6 +109,7 @@ public class DDGardenAuton extends OpMode {
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
         bbb.arm_up();
+//        bbb.shooterPoweradjust(-0.25);
         bbb.resetCatapultEncoders();
         Scheduler.reset();
 
@@ -117,6 +118,10 @@ public class DDGardenAuton extends OpMode {
         follower.update();
         telemetry.addLine("Init Complete. Good Luck Drivers!!");
         telemetry.update();
+    }
+    @Override
+    public void init_loop(){
+        bbb.catapultUpdate();
     }
 
     @Override

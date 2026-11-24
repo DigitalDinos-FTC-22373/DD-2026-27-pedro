@@ -96,7 +96,7 @@ public class DDTeleop extends OpMode {
         if (gamepad2.right_stick_y > 0.5){
             bbb.shooterPoweradjust(-0.01);
         }
-        if (gamepad2.right_stick_y < 0.5 ){
+        if (gamepad2.right_stick_y < -0.5 ){
             bbb.shooterPoweradjust(0.01);
         }
 
