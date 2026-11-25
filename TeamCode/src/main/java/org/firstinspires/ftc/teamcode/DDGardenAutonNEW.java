@@ -79,6 +79,10 @@ public class DDGardenAutonNEW extends OpMode {
         return line(gardenPose,startPose).linear(gardenPose,startPose);
     }
 
+    private Path StartToPark(){
+        return curve(startPose, parkControlPose, parkPose).linear(startPose,parkPose);
+    }
+
     Command shoot = sequential(
             instant(()->{bbb.lower();}),
             instant(() -> {bbb.intakeOff();}),
@@ -108,7 +112,16 @@ public class DDGardenAutonNEW extends OpMode {
                         waitMs(1000)),
 
                 race(follow(follower,GardenTOStart()),
-                        waitMs(1000))
+                        waitMs(1000)),
+
+                waitMs(1000),
+                shoot,
+                race(follow(follower, StartToPark()),
+                    waitMs(5000)),
+
+                instant(() -> {bbb.intakeOff();})
+
+
 
 //                //Go to garden, pick up pollen and shoot
 //                instant(() -> {bbb.intakeOn();}),
@@ -158,7 +171,7 @@ public class DDGardenAutonNEW extends OpMode {
     @Override
     public void init_loop(){
         bbb.catapultUpdate();
-        telemetry.addLine(" ADJUSTED GARDEN POSE and added original return and fixed heading");
+        telemetry.addLine("everything is working");
     }
 
     @Override

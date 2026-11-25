@@ -27,8 +27,8 @@ public class BlueBarneyBot {
     public static double ARM_UP_POS = 0.95;
     public static double ARM_DOWN_POS = 0.27;
 
-    public static double FLOWER_F = 500;  // Flower 550
-    public static double FLOWER_P = 0.2;
+    public static double FLOWER_F = 505;  // Flower 550
+    public static double FLOWER_P = 0.16;
 
 
 
