@@ -158,9 +158,8 @@ public class DDGardenAutonNEW extends OpMode {
         bbb.init(hardwareMap);
         bbb.arm_up();
 //        bbb.shooterPoweradjust(-0.25);
-        bbb.resetCatapultEncoders();
         Scheduler.reset();
-
+        bbb.setAutonDownPos();
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
@@ -171,7 +170,8 @@ public class DDGardenAutonNEW extends OpMode {
     @Override
     public void init_loop(){
         bbb.catapultUpdate();
-        telemetry.addLine("everything is working");
+        bbb.resetCatapultEncoders();
+        telemetry.addLine("TUNED AUTO DOWN");
     }
 
     @Override

@@ -14,21 +14,23 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class BlueBarneyBot {
 
     // CONSTANTS
-    public static int CATAPULT_DOWN_POS = -20;
-    public static int CATAPULT_SHOOT_POS = 200;
+    public static int CATAPULT_DOWN_POS = -30;
+    public static int CATAPULT_SHOOT_POS = 180;
     public static int CATAPULT_BLOCK_POS = 250;
-    public static int CATAPULT_FLOWER_POS = 200; //220
+    public static int CATAPULT_FLOWER_POS = 230; //220
     public static double DEFAULT_P = 0.7;  // Lowering and blocking
     public static double DEFAULT_F = 300;
     public static double FAST_F = 400; // Shooting
     public static double FAST_P = 1.9;
     public static double SLOW_F = 550;  // Flower
-    public static double SLOW_P = 0.2;
+    public static double SLOW_P = 0.15;
     public static double ARM_UP_POS = 0.95;
     public static double ARM_DOWN_POS = 0.27;
 
+    public static int AUTON_DOWN_POS = -300;
+
     public static double FLOWER_F = 505;  // Flower 550
-    public static double FLOWER_P = 0.16;
+    public static double FLOWER_P = 0.12;
 
 
 
@@ -45,8 +47,9 @@ public class BlueBarneyBot {
     private double set_F;
     private boolean blocking;
     private boolean arm_is_up;
-
     private boolean flower_up;
+
+    private boolean catapult_init = false;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -175,10 +178,53 @@ public class BlueBarneyBot {
         return setPower;
     }
 
+    public void setAutonDownPos(){
+            if (catapult_init = false) {
+                set_P = FAST_P;
+                set_F = FAST_F;
+                catapult_init = true;
+            }
+            else{
+                catapult_left.setTargetPosition(AUTON_DOWN_POS);
+                catapult_right.setTargetPosition(AUTON_DOWN_POS);
+
+                catapult_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                catapult_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                catapult_init = false;
+
+            }
+
+
+
+
+
+
+        //        catapult_left.setTargetPosition(AUTON_DOWN_POS);
+//        catapult_right.setTargetPosition(AUTON_DOWN_POS);
+//        set_P =  FAST_P;
+//        set_F = FAST_F;
+//        resetCatapultEncoders();
+    }
+
     public void catapultUpdate(){
         PIDFCoefficients pidfNew = new PIDFCoefficients(10.5, 0, 0, set_F);
         catapult_left.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
         catapult_right.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
+
+        if (flower_up) {
+            if (catapult_left.getCurrentPosition() > 0.5 * CATAPULT_FLOWER_POS) {
+                if (set_P < 0.15) {
+                    set_P = 0.18;
+                }
+            }
+            if (catapult_left.getCurrentPosition() > 0.82 * CATAPULT_FLOWER_POS) {
+                if (set_P < 0.25) {
+                    set_P = 0.32;
+                }
+            }
+        }
+
         catapult_left.setPositionPIDFCoefficients(set_P);
         catapult_right.setPositionPIDFCoefficients(set_P);
 
