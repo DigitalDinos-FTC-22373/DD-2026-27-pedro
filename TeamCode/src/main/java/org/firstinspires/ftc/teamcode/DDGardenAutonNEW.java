@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous
+@Autonomous (preselectTeleOp = "DDTeleop")
 public class DDGardenAutonNEW extends OpMode {
     private Follower follower;
     private BlueBarneyBot bbb;
@@ -159,7 +159,8 @@ public class DDGardenAutonNEW extends OpMode {
         bbb.arm_up();
 //        bbb.shooterPoweradjust(-0.25);
         Scheduler.reset();
-        bbb.setAutonDownPos();
+//        bbb.setAutonDownPos();
+        bbb.resetCatapultEncoders();
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
@@ -170,7 +171,7 @@ public class DDGardenAutonNEW extends OpMode {
     @Override
     public void init_loop(){
         bbb.catapultUpdate();
-        bbb.resetCatapultEncoders();
+//        bbb.resetCatapultEncoders();
         telemetry.addLine("TUNED AUTO DOWN");
     }
 

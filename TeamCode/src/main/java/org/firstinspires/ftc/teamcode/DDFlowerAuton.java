@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.conditional;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.race;
@@ -20,7 +21,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous
+@Autonomous  (preselectTeleOp = "DDTeleop")
 public class DDFlowerAuton extends OpMode {
     private Follower follower;
     private BlueBarneyBot bbb;
@@ -53,12 +54,17 @@ public class DDFlowerAuton extends OpMode {
             waitMs(1000),
             instant(() -> {bbb.lower();})
     );
+//    Command launch = conditional(
+//            ()-> hive_up,
+//            bbb.lower(),
+//            bbb.shoot()
+//    );
 
     private Command autoRoutine() {
         return sequential(
                 follow(follower, StartToShoot()),
-                shoot,
-                instant(() -> {bbb.intakeOn();}),
+//                shoot,
+                instant(() -> {bbb.intakeOff();}),
                 instant(() -> {bbb.arm_down();}),
                 race(follow(follower, ShootToFlower()),
                         waitMs(3000)),
@@ -67,7 +73,7 @@ public class DDFlowerAuton extends OpMode {
                 race(follow(follower, FlowerToShoot()),
                         waitMs(3000)),
                 instant(() -> {bbb.arm_up();}),
-                shoot,
+//                shoot,
                 follow(follower, ShootToPark())
         );
     }

@@ -20,9 +20,12 @@ public class DDTeleop extends OpMode {
     private Follower follower;
     private BlueBarneyBot bbb;
 
+    private DDAprilTag aprilTag;
     double locked_heading;
     private boolean heading_locked;
     private boolean auto_aim;
+
+    private boolean manual_exposure_set= false;
     private final PIDController headingController = new PIDController(2.0, 0.0, 0.1);
 
     @Override
@@ -31,11 +34,20 @@ public class DDTeleop extends OpMode {
         bbb = new BlueBarneyBot();
         bbb.init(hardwareMap);
         bbb.arm_up();
+        aprilTag = new DDAprilTag();
+        aprilTag.initAprilTag(hardwareMap);
     }
 
     @Override
     public void init_loop(){
         bbb.catapultUpdate();
+        if (!manual_exposure_set) {
+            manual_exposure_set = aprilTag.setManualExposure(2, 225, telemetry);
+        }
+        else {
+            aprilTag.detectionAprilTag(telemetry);
+        }
+
     }
 
 
@@ -106,7 +118,8 @@ public class DDTeleop extends OpMode {
         if (gamepad1.bWasPressed()) {bbb.block();}
         if (gamepad1.bWasReleased()) {bbb.lower();}
 
-        if (gamepad2.bWasPressed()) {auto_aim = !auto_aim;};
+        if (gamepad1.left_trigger > 0.5) {auto_aim = true;}
+        else {auto_aim = false;}
 
         if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {bbb.toggleflower();}
 
@@ -121,11 +134,6 @@ public class DDTeleop extends OpMode {
         if(gamepad1.backWasPressed() || gamepad2.backWasPressed()){follower.setHeading(0);}
 
         if (gamepad1.yWasPressed() || gamepad2.yWasPressed()){bbb.toggle_arm();}
-
-        if (gamepad1.leftTriggerWasPressed()){
-            locked_heading = follower.pose().heading();
-            heading_locked = !heading_locked;
-        }
 
         if (gamepad1.startWasPressed() || gamepad2.startWasPressed()){
             bbb.resetCatapultEncoders();
